@@ -13,9 +13,9 @@ class App extends Component {
         super(props);
         this.state = {
             data: [
-                {name: 'Ivan Ivanov', salary: 1000, increase: true, id: 1},
-                {name: 'Sergey Petrov', salary: 800, increase: false, id: 2},
-                {name: 'Andrey Sidorov', salary: 5000, increase: true, id: 3},
+                {name: 'Ivan Ivanov', salary: 1000, increase: true, like: true, id: 1},
+                {name: 'Sergey Petrov', salary: 800, increase: false, like: false, id: 2},
+                {name: 'Andrey Sidorov', salary: 5000, increase: true, like: false, id: 3},
             ],            
         }
 
@@ -42,26 +42,91 @@ class App extends Component {
             name, 
             salary,
             increase: false,
+            like: false,
             id: this.maxIndex++
         }
 
-        this.setState(({data}) => {
-            const newArr = [...data, newItem];
-            return {
-                data: newArr
-            }
-        });
+        if(name.length > 3 && salary > 0) {
+            this.setState(({data}) => {
+                const newArr = [...data, newItem];
+                return {
+                    data: newArr
+                }
+            });
+        }
+
+        
     }
 
+    onToogleProp = (id, prop) => {
+        // this.setState(({data}) => {
+        //     const index = data.findIndex(elem => elem.id === id);
+            
+        //     const old = data[index];
+        //     const newItem = {...old, increase: !old.increase};
+        //     const newArr = [...data.slice(0, index), newItem, ...data.slice(index + 1)]
+            
+        //     return {
+        //         data: newArr
+        //     }
+        // })
+
+       this.setState(({data}) => ({
+           data: data.map(item => {
+               if(item.id === id) {
+                   return {...item, [prop]: !item[prop]}
+               }
+               return item;
+           })
+       }))
+    }
+
+    // onToogleIncrease = (id) => {
+        // this.setState(({data}) => {
+        //     const index = data.findIndex(elem => elem.id === id);
+            
+        //     const old = data[index];
+        //     const newItem = {...old, increase: !old.increase};
+        //     const newArr = [...data.slice(0, index), newItem, ...data.slice(index + 1)]
+            
+        //     return {
+        //         data: newArr
+        //     }
+        // })
+
+    //    this.setState(({data}) => ({
+    //        data: data.map(item => {
+    //            if(item.id === id) {
+    //                return {...item, increase: !item.increase}
+    //            }
+    //            return item;
+    //        })
+    //    }))
+    // }
+
+    // onToogleRise = (id) => {
+    //     this.setState(({data}) => ({
+    //         data: data.map(item => {
+    //             if(item.id === id) {
+    //                 return {...item, like: !item.like}
+    //             }
+    //             return item;
+    //         })
+    //     }))
+    // }
+
     render() {
+        const length = this.state.data.length;
+        const increased = this.state.data.filter(item => item.increase).length;
         return (
+            
             <div className="app">
-                <AppInfo/>
+                <AppInfo length={length} increased={increased}/>
                 <div className="search-panel">
                     <SearchPanel/>
                     <AppFilter/>
                 </div>
-                <EmployeesList data={this.state.data} onDelete={this.deleteItem}/>
+                <EmployeesList data={this.state.data} onDelete={this.deleteItem} onToogleProp={this.onToogleProp} />
                 <EmployeesAddForm onCreate={this.createItem}/>
             </div>
         );
